@@ -10,18 +10,69 @@
 </head>
 <body>
 <!-- partial:index.partial.html -->
-<button class="cybr-btn" onclick=firstTime()>
+<button class="cybr-btn" onclick=firstTime() style ="background-color: orange;">
   First Time<span aria-hidden>_</span>
   <span aria-hidden class="cybr-btn__glitch">UCY GYM_</span>
   <span aria-hidden class="cybr-btn__tag">R25</span>
 </button>
-<button id="autoReservationBtn" class="cybr-btn">
+<button id="autoReservationBtn" class="cybr-btn" style="background-color: blueviolet;">
   Automatic Reservation_<span aria-hidden>_</span>
   <span aria-hidden class="cybr-btn__glitch">UCY GYM_</span>
   <span aria-hidden class="cybr-btn__tag">R25</span>
 </button>
+<div class="cybr-btn">
+  <div class="dropdown">
+    <button class="cybr-btn dropdown-btn" id="dropdownButton">
+      Select Time<span aria-hidden>_</span>
+      <span aria-hidden class="cybr-btn__glitch">Time_</span>
+      <span aria-hidden class="cybr-btn__tag">R25</span>
+    </button>
+    <div class="dropdown-content">
+      <button class="cybr-btn dropdown-option" data-value="7:45" onclick=setTime(1)>
+        7:45<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">7:45_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="9:30" onclick=setTime(2)>
+        9:30<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">9:30_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="11:15" onclick=setTime(3)>
+        11:15<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">11:15_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+    </div>
+  </div>
+</div>
+<button id="Result" class="cybr-btn" style="background-color: black; color: aqua;">
+  Result<span aria-hidden>_</span>
+  <span aria-hidden class="cybr-btn__glitch">#$%^&*!@~</span>
+  <span aria-hidden class="cybr-btn__tag">R25</span>
+</button>
 <!-- partial -->
   <script  src="./script.js"></script>
+  <script>document.addEventListener('click', function(e) {
+    const dropdown = document.querySelector('.dropdown-content');
+    const dropdownButton = document.getElementById('dropdownButton');
+    
+    // Toggle dropdown display
+    if (e.target.closest('.dropdown-btn')) {
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    } else {
+      dropdown.style.display = 'none';
+    }
+    
+    // Handle option selection
+    if (e.target.closest('.dropdown-option')) {
+      const selectedOption = e.target.closest('.dropdown-option').getAttribute('data-value');
+      const newLabel = `${selectedOption}<span aria-hidden>_</span>
+                        <span aria-hidden class="cybr-btn__glitch">${selectedOption}_</span>
+                        <span aria-hidden class="cybr-btn__tag">R25</span>`;
+      dropdownButton.innerHTML = newLabel;
+    }
+  });</script>
 
 </body>
 </html>
