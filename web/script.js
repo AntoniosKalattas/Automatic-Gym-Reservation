@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+var ReservationTime = 1;
 
 function firstTime(){
     const pyscript = spawn('python3', ['firstTime.py']);
@@ -15,12 +16,13 @@ function firstTime(){
     });
 }
 function autoReservation(){
-    const pyscript = spawn('python3', ['autoReservation.py']);
+    const pyscript = spawn('python3', ['autoReservation.py', ReservationTime]);
     pyscript.stdout.on('data', (data) => {
         console.log(`output: ${data}`);
-        if(data == "DONE"){
-            success()
+        if(data.includes("DONE")){
+            success();
         }
+        
     });
 
     pyscript.stderr.on('data', (data) => {
@@ -36,21 +38,32 @@ function autoReservation(){
     });
 }
 function success(){
-    var button = document.getElementById('autoReservationBtn');
+    var button = document.getElementById('Result');
       // Change the button content
       button.innerHTML = 'Reservation Complete<span aria-hidden>_</span><span aria-hidden class="cybr-btn__glitch">Completed_</span><span aria-hidden class="cybr-btn__tag">R26</span>';
       button.style.backgroundColor = 'green';
     
 }
 function failiur(){
-    var button = document.getElementById('autoReservationBtn');
-    // Change the button content
-    button.innerHTML = `<button id="autoReservationBtn" class="cybr-btn">
-    Automatic Reservation_<span aria-hidden>_</span>
-    <span aria-hidden class="cybr-btn__glitch">UCY GYM_</span>
-    <span aria-hidden class="cybr-btn__tag">R25</span>
-  </button>`;
-    button.style.backgroundColor = 'red';
+    console.log("failiur")
+    var button = document.getElementById('Result');
+    if (button) {
+        // Create a new button element
+        const newButton = document.createElement('button');
+        newButton.id = 'autoReservationBtn';
+        newButton.className = 'cybr-btn';
+        newButton.innerHTML = `Reservation Not Complete<span aria-hidden>_</span>
+          <span aria-hidden class="cybr-btn__glitch">!!!!!!!!!!!!!!!!!</span>
+          <span aria-hidden class="cybr-btn__tag">R26</span>`;
+        newButton.style.backgroundColor = 'red';
+        // Replace the old button with the new one
+        button.parentNode.replaceChild(newButton, button);
+      }
+}
+
+function setTime(resTime){
+    //send the resTime to py script
+    ReservationTime=resTime
 }
 
 // Example usage: Call autoReservation when needed
@@ -62,3 +75,4 @@ document.addEventListener('DOMContentLoaded', () => {
       button.addEventListener('click', autoReservation);
     }
   });
+
