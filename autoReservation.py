@@ -15,7 +15,7 @@ print(sys.argv[1])
 time_option = str(sys.argv[1])                                                                               #time for reservation.
 web_site = "https://applications2.ucy.ac.cy/sportscenter/online_reservations_pck2.insert_reservation?p_lang="# website link.
 current_datetime = datetime.now()       #current time.
-current_day = str(current_datetime.day) #current day.
+current_day = str(sys.argv[2]) #current day.
 print("Day: "+ current_day)
 data =[]
 
