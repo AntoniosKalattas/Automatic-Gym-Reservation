@@ -7,29 +7,30 @@ from colorama import init, Fore, Back, Style
 from datetime import datetime
 from tqdm import tqdm
 import sys
-path_to_profile = "/Users/admin/Library/Application Support/Google/Chrome/" #path to chrome profile (si you won't need to login).
-profile_name = "Default"                                                    #name of the profile folder
+path_to_profile = "/Users/admin/Library/Application Support/Google/Chrome/"                                  #path to chrome profile (si you won't need to login).
+profile_name = "Default"                                                                                     #name of the profile folder.
 #time options: 1    2    3     4     5     6     7     8
 #              7:45 9:30 11:15 13:00 14:45 16:45 18:30 20:15
-time_option = str(6)
-web_site = "https://applications2.ucy.ac.cy/sportscenter/online_reservations_pck2.insert_reservation?p_lang="# website link
-current_datetime = datetime.now()       #current time
-current_day = str(current_datetime.day+1) #current day
+print(sys.argv[1])
+time_option = str(sys.argv[1])                                                                               #time for reservation.
+web_site = "https://applications2.ucy.ac.cy/sportscenter/online_reservations_pck2.insert_reservation?p_lang="# website link.
+current_datetime = datetime.now()       #current time.
+current_day = str(sys.argv[2]) #current day.
 print("Day: "+ current_day)
 data =[]
 
-# Initialize tqdm progress bar with the expected number of try blocks
-total_tries = 6  # Update this number based on the actual number of try blocks
+# Initialize tqdm progress bar with the expected number of try blocks.
+total_tries = 6  # Update this number based on the actual number of try blocks.
 pbar = tqdm(total=total_tries)
 
 options = webdriver.ChromeOptions()
-options.add_argument('--headless')                          # Enable headless mode
-options.add_argument('--no-sandbox')                        # Bypass OS security model
-options.add_argument('--disable-dev-shm-usage')             # Overcome limited resource problems
-options.add_argument('--disable-gpu')                       # Disable GPU (important for headless)
-options.add_argument('--window-size=1920,1080')             #  Set window size to avoid issues with headless mode
-options.add_argument(f"user-data-dir={path_to_profile}")    # Set the profile directory
-options.add_argument(f"profile-directory={profile_name}")   # same thing here
+options.add_argument('--headless')                          # Enable headless mode.
+options.add_argument('--no-sandbox')                        # Bypass OS security model.
+options.add_argument('--disable-dev-shm-usage')             # Overcome limited resource problems.
+options.add_argument('--disable-gpu')                       # Disable GPU (important for headless).
+options.add_argument('--window-size=1920,1080')             #  Set window size to avoid issues with headless mode.
+options.add_argument(f"user-data-dir={path_to_profile}")    # Set the profile directory.
+options.add_argument(f"profile-directory={profile_name}")   # same thing here.
 
 driver = webdriver.Chrome(options=options)  # Optional argument, if not specified will search path.
 driver.get(web_site)
@@ -103,4 +104,5 @@ try:
 except NoSuchElementException:
     pbar.update(1)
     print(Fore.GREEN + "DONE")
+    print(69)
 driver.quit()

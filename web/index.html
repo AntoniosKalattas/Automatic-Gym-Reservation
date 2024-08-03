@@ -7,21 +7,142 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 <link rel="stylesheet" href="./style.css">
 
+<style>
+  .cybr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+
+.cybr-value {
+  font-family: 'Cyber', sans-serif;
+  color: var(--color);
+  font-size: var(--font-size);
+  font-weight: 700;
+  margin: 0 20px;
+}
+.small-btn {
+  min-width: 50px;
+  height: 50px;
+  line-height: 50px;
+  font-size: 20px;
+}
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled .cybr-btn__glitch {
+  display: none;
+}
+</style>
+
 </head>
 <body>
 <!-- partial:index.partial.html -->
-<button class="cybr-btn" onclick=firstTime()>
+<button class="cybr-btn" onclick=firstTime() style ="background-color: orange;">
   First Time<span aria-hidden>_</span>
   <span aria-hidden class="cybr-btn__glitch">UCY GYM_</span>
   <span aria-hidden class="cybr-btn__tag">R25</span>
 </button>
-<button id="autoReservationBtn" class="cybr-btn">
+<button id="autoReservationBtn" class="cybr-btn" style="background-color: blueviolet;">
   Automatic Reservation_<span aria-hidden>_</span>
   <span aria-hidden class="cybr-btn__glitch">UCY GYM_</span>
   <span aria-hidden class="cybr-btn__tag">R25</span>
 </button>
+<div class="cybr-btn">
+  <div class="dropdown">
+    <button class="cybr-btn dropdown-btn" id="dropdownButton">
+      Select Time<span aria-hidden>_</span>
+      <span aria-hidden class="cybr-btn__glitch">Time_</span>
+      <span aria-hidden class="cybr-btn__tag">R25</span>
+    </button>
+    <div class="dropdown-content">
+      <button class="cybr-btn dropdown-option" data-value="7:45" onclick=setTime(1)>
+        7:45<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">7:45_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="9:30" onclick=setTime(2)>
+        9:30<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">9:30_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="11:15" onclick=setTime(3)>
+        11:15<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">11:15_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="13:00" onclick=setTime(4)>
+        13:00<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">13:00_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="14:45" onclick=setTime(5)>
+        14:45<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">14:45_</span>
+        <span aria-hidden class="cybr-btn__tag">R25</span>
+      </button>
+      <button class="cybr-btn dropdown-option" data-value="16:45" onclick=setTime(6)>
+        16:45<span aria-hidden>_</span>
+        <span aria-hidden class="cybr-btn__glitch">16:45_</span>
+        <span aria-hidden class="cybr-btn__tag">AK</span>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<h4 style="text-align: center;">Day:</h4>
+
+<div id="counterBox" class="cybr-box">
+  <button id="decrementBtn" class="cybr-btn small-btn">
+    -<span aria-hidden>_</span>
+    <span aria-hidden class="cybr-btn__glitch">-</span>
+    <span aria-hidden class="cybr-btn__tag">R25</span>
+  </button>
+  <span id="counterValue" class="cybr-value"></span>
+  <button id="incrementBtn" class="cybr-btn small-btn">
+    +<span aria-hidden>_</span>
+    <span aria-hidden class="cybr-btn__glitch">+</span>
+    <span aria-hidden class="cybr-btn__tag">R25</span>
+  </button>
+</div>
+
+
+
+
+<h4 style="text-align: center;">Output:</h4>
+<button id="Result" class="cybr-btn" style="background-color: black; color: aqua;">
+  Result<span aria-hidden>_</span>
+  <span aria-hidden class="cybr-btn__glitch">#$%^&*!@~</span>
+  <span aria-hidden class="cybr-btn__tag">R25</span>
+</button>
 <!-- partial -->
   <script  src="./script.js"></script>
+  <script>document.addEventListener('click', function(e) {
+    const dropdown = document.querySelector('.dropdown-content');
+    const dropdownButton = document.getElementById('dropdownButton');
+    
+    // Toggle dropdown display
+    if (e.target.closest('.dropdown-btn')) {
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    } else {
+      dropdown.style.display = 'none';
+    }
+    
+    // Handle option selection
+    if (e.target.closest('.dropdown-option')) {
+      const selectedOption = e.target.closest('.dropdown-option').getAttribute('data-value');
+      const newLabel = `${selectedOption}<span aria-hidden>_</span>
+                        <span aria-hidden class="cybr-btn__glitch">${selectedOption}_</span>
+                        <span aria-hidden class="cybr-btn__tag">R25</span>`;
+      dropdownButton.innerHTML = newLabel;
+    }
+  });
+  /////////////////////////////////////////////////////
+</script>
 
 </body>
 </html>
