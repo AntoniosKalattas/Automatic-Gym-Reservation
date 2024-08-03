@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 var ReservationTime = 1;
+let currentDate =1;
 
 function firstTime(){
     const pyscript = spawn('python3', ['firstTime.py']);
@@ -16,7 +17,7 @@ function firstTime(){
     });
 }
 function autoReservation(){
-    const pyscript = spawn('python3', ['autoReservation.py', ReservationTime]);
+    const pyscript = spawn('python3', ['autoReservation.py', ReservationTime, currentDate]);
     pyscript.stdout.on('data', (data) => {
         console.log(`output: ${data}`);
         if(data.includes("DONE")){
@@ -76,3 +77,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const decrementBtn = document.getElementById('decrementBtn');
+    const incrementBtn = document.getElementById('incrementBtn');
+    const counterValue = document.getElementById('counterValue');
+  
+    // Get the current date number
+    const initialDate = new Date().getDate();
+    currentDate = initialDate;
+  
+    // Function to update the display
+    function updateDisplay() {
+      counterValue.textContent = currentDate;
+      // Update the disabled state of the decrement button
+      if (currentDate <= initialDate) {
+        decrementBtn.classList.add('disabled');
+      } else {
+        decrementBtn.classList.remove('disabled');
+      }
+    }
+  
+    // Initial display
+    updateDisplay();
+  
+    decrementBtn.addEventListener('click', () => {
+      if (currentDate > initialDate) {
+        currentDate -= 1;
+        updateDisplay();
+      }
+    });
+  
+    incrementBtn.addEventListener('click', () => {
+      currentDate += 1;
+      updateDisplay();
+    });
+  });
+  
