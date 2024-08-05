@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const path = require('path');
 var ReservationTime = 1;
 let currentDate =1;
 
@@ -17,6 +18,7 @@ function firstTime(){
     });
 }
 function autoReservation(){
+    pleaseWaitAnimation();
     const pyscript = spawn('python3', ['autoReservation.py', ReservationTime, currentDate]);
     pyscript.stdout.on('data', (data) => {
         console.log(`output: ${data}`);
@@ -38,6 +40,13 @@ function autoReservation(){
         console.log(`script exited with code ${code}`);
     });
 }
+
+function pleaseWaitAnimation(){
+    var button = document.getElementById('Result');
+    button.innerHTML = 'Please Wait<span aria-hidden>_</span><span aria-hidden class="cybr-btn__glitch">Completed_</span><span aria-hidden class="cybr-btn__tag">R26</span>';
+    button.style.backgroundColor = 'white';
+}
+
 function success(){
     var button = document.getElementById('Result');
       // Change the button content
