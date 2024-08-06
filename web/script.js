@@ -1,7 +1,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
-var ReservationTime = 1;
-let currentDate =1;
+var ReservationTime = 1;//default time (7:45).
+let currentDate =1;//default day date 1/current
+let status=false; //whether the animation will continue or not.
 
 function firstTime(){
     const pyscript = spawn('python3', ['firstTime.py']);
@@ -18,6 +19,8 @@ function firstTime(){
     });
 }
 function autoReservation(){
+    var flag=false;
+    var counter=0;
     pleaseWaitAnimation();
     const pyscript = spawn('python3', ['autoReservation.py', ReservationTime, currentDate]);
     pyscript.stdout.on('data', (data) => {
@@ -30,10 +33,15 @@ function autoReservation(){
 
     pyscript.stderr.on('data', (data) => {
         console.error(`error: ${data}`);
+        if(data.includes)
         if (data.includes("ERROR")) {
             failiur();
+            flag=true;
         }
-
+        if(data.includes("/6") && flag==false){
+            loading(counter);
+            counter++;
+        }
     });
 
     pyscript.on('close', (code) => {
@@ -43,10 +51,15 @@ function autoReservation(){
 
 function pleaseWaitAnimation(){
     var button = document.getElementById('Result');
-    button.innerHTML = 'Please Wait<span aria-hidden>_</span><span aria-hidden class="cybr-btn__glitch">Completed_</span><span aria-hidden class="cybr-btn__tag">R26</span>';
+    button.innerHTML = 'Please Wait.<span aria-hidden>_</span><span aria-hidden class="cybr-btn__glitch">Completed_</span><span aria-hidden class="cybr-btn__tag">R26</span>';
     button.style.backgroundColor = 'white';
 }
 
+function loading(counter){
+    var button = document.getElementById('Result');
+    button.innerHTML = `${counter}/6<span aria-hidden>_</span><span aria-hidden class="cybr-btn__glitch">Completed_</span><span aria-hidden class="cybr-btn__tag">R26</span>`;
+    button.style.backgroundColor = 'white';
+}
 function success(){
     var button = document.getElementById('Result');
       // Change the button content
@@ -76,9 +89,6 @@ function setTime(resTime){
     ReservationTime=resTime
 }
 
-// Example usage: Call autoReservation when needed
-// autoReservation();  // Uncomment to call immediately
-// Or attach to an event listener
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('autoReservationBtn');
     if (button) {
