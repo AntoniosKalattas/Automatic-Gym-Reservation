@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/AntoniosKalattas/UCYGYM_BOT/tree/main#readme",
   "dependencies": {
-    "electron": "^31.2.1"
+    "electron": "^31.7.7"
   }
 }
