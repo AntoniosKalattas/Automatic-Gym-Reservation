@@ -90,6 +90,8 @@ for i in range(2):
     except NoSuchElementException:
         try:
             driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/center/table[2]/tbody/tr/td[2]/div/button").click()   
+            driver.find_element(By.XPATH, "//button[text()='"+current_day+ "']").click()
+            pbar.update(1)
         except NoSuchElementException:
             print(Fore.RED +"ERROR: "+Style.RESET_ALL +"Day Button Not found")
             flag = True
