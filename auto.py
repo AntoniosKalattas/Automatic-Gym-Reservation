@@ -10,9 +10,9 @@ from datetime import datetime, timedelta
 #              7:45 9:30 11:15 13:00 14:45 16:45 18:30 20:15             #
 time_option = 7                                                          #
 #Saturday								                                 #
-#time options: 9     10     11						                     #
+#time options: 1     2      3						                     #
 #	           8:45  10:30  12:15					                     #
-time_option2 = 11							                             #
+time_option2 = 1							                             #
 ##########################################################################
 
 
