@@ -32,7 +32,7 @@ UCYGYM_BOT is an automation tool for reserving gym sessions at the University of
    pip install -r requirements.txt
    ```
 
-   Ensure Electron dependencies are installed via npm:
+   Ensure Electron dependencies are installed via npm(Only for UI perposes):
 
    ```bash
    npm install
@@ -42,6 +42,11 @@ UCYGYM_BOT is an automation tool for reserving gym sessions at the University of
 
    - Download [ChromeDriver](https://googlechromelabs.github.io/chrome-for-testing/) for your OS.
    - Place it in your system's PATH or specify its location in the script.
+   
+4. **Copy the path to chrome profile**:
+   
+   - enter `chrome://version` in chrome url
+   - copy the location of `profile path` inside the `chromeProfilePath.txt` file
 
 ## Usage
 
