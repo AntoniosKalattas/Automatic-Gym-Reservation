@@ -45,7 +45,7 @@ UCYGYM_BOT is an automation tool for reserving gym sessions at the University of
    
 4. **Copy the path to chrome profile**:
    
-   - enter chrome://version in chrome url
+   - enter `chrome://version` in chrome url
    - copy the location of `profile path` inside the `chromeProfilePath.txt` file
 
 ## Usage
