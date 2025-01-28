@@ -66,8 +66,8 @@ npm start
 - **Element Not Found**: Verify that the UCY reservation system hasn't changed its structure. Update the selectors in the scripts if necessary.
 - **Node.js Issues**: Ensure Node.js is installed to run Electron.
 
-## How to setup automatic reservation
-   - Choose the desire time of the reservation in `auto.py`
+# How to setup automatic reservation
+   - Choose the desired time of the reservation in `auto.py`
    - In your LINUX server run the command
 ```bash
 nohup python3 auto.py &
