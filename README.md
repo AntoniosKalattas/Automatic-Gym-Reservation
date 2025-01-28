@@ -32,7 +32,7 @@ UCYGYM_BOT is an automation tool for reserving gym sessions at the University of
    pip install -r requirements.txt
    ```
 
-   Ensure Electron dependencies are installed via npm:
+   Ensure Electron dependencies are installed via npm(Only for UI perposes):
 
    ```bash
    npm install
