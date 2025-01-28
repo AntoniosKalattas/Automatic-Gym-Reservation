@@ -8,7 +8,7 @@ from datetime import datetime
 from tqdm import tqdm
 import sys
 # Open the file in read mode
-with open("example.txt", "r") as file:
+with open("autoReservation.txt", "r") as file:
     path_to_profile = file.read()
 #path_to_profile = "/Users/admin/Library/Application Support/Google/Chrome/"                                  #path to chrome profile (si you won't need to login).                                                                                    #name of the profile folder.
 #time options: 1    2    3     4     5     6     7     8
