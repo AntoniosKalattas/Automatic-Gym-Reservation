@@ -7,8 +7,10 @@ from colorama import init, Fore, Back, Style
 from datetime import datetime
 from tqdm import tqdm
 import sys
-path_to_profile = "/Users/admin/Library/Application Support/Google/Chrome/"                                  #path to chrome profile (si you won't need to login).
-profile_name = "Default"                                                                                     #name of the profile folder.
+# Open the file in read mode
+with open("example.txt", "r") as file:
+    path_to_profile = file.read()
+#path_to_profile = "/Users/admin/Library/Application Support/Google/Chrome/"                                  #path to chrome profile (si you won't need to login).                                                                                    #name of the profile folder.
 #time options: 1    2    3     4     5     6     7     8
 #              7:45 9:30 11:15 13:00 14:45 16:45 18:30 20:15
 print(sys.argv[1])
@@ -55,12 +57,15 @@ for i in range(2):
         driver.find_element(By.XPATH, "//button[text()='"+current_day+ "']").click()
         pbar.update(1)
     except NoSuchElementException:
-        print(Fore.RED +"ERROR: "+Style.RESET_ALL +"blue button with the day, could be found in the page. Please check again for any changes in the website.")
-        flag = True
-    if flag==False:
-        break
-    else:
-        time.sleep(5)
+        try:
+            driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/center/table[2]/tbody/tr/td[2]/div/button").click()   
+        except NoSuchElementException:
+            print(Fore.RED +"ERROR: "+Style.RESET_ALL +"Day Button Not found")
+            flag = True
+        if flag==False:
+            break
+        else:
+            time.sleep(5)
 #Screen 3
 time.sleep(3)
 try:
@@ -68,13 +73,13 @@ try:
     driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td/table/tbody/tr/td[3]/select/option["+time_option+"]").click()   #choose the time
     pbar.update(1)
 except NoSuchElementException:
-    print(Fore.RED + "ERROR: " +Style.RESET_ALL + "No such time found, check website for any changes.", file=sys.stderr)
+    print(Fore.RED + "ERROR: " +Style.RESET_ALL + "No such time could be found, check website for any changes in HTML code.", file=sys.stderr)
     sys.exit(1)
 try:
     driver.find_element(By.XPATH, "//*[@id='textarea']").send_keys("ak")
     pbar.update(1)
 except NoSuchElementException:
-    print(Fore.RED + "ERROR: " +Style.RESET_ALL + "No textbox found, check website for any changes.", file=sys.stderr)
+    print(Fore.RED + "ERROR: " +Style.RESET_ALL + "No comment textbox found, check website for any changes.", file=sys.stderr)
     sys.exit(1)
 try:
     driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[5]/td/div/button").click()
