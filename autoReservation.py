@@ -7,6 +7,14 @@ from colorama import init, Fore, Back, Style
 from datetime import datetime
 from tqdm import tqdm
 import sys
+
+def element_exists(driver, by, value):
+    try:
+        driver.find_element(by, value)
+        return True
+    except NoSuchElementException:
+        return False
+
 # Open the file in read mode
 with open("chromeProfilePath.txt", "r") as file:
     path_to_profile = file.read()
@@ -32,11 +40,34 @@ options.add_argument('--disable-dev-shm-usage')             # Overcome limited r
 options.add_argument('--disable-gpu')                       # Disable GPU (important for headless).
 options.add_argument('--window-size=1920,1080')             #  Set window size to avoid issues with headless mode.
 options.add_argument(f"user-data-dir={path_to_profile}")    # Set the profile directory.
-options.add_argument(f"profile-directory=Default")   # same thing here.
+options.add_argument(f"profile-directory=Default")          # same thing here.
 
 driver = webdriver.Chrome(options=options)  # Optional argument, if not specified will search path.
 driver.get(web_site)
 time.sleep(5)
+if(element_exists(driver,By.CLASS_NAME, "login-paginated-page")):
+    print("Please login for first time")
+    driver.quit();
+    optionsH = webdriver.ChromeOptions()
+    optionsH.add_argument('--no-sandbox')                        # Bypass OS security model.
+    optionsH.add_argument('--disable-dev-shm-usage')             # Overcome limited resource problems.
+    optionsH.add_argument('--disable-gpu')                       # Disable GPU (important for headless).
+    optionsH.add_argument('--window-size=1920,1080')             #  Set window size to avoid issues with headless mode.
+    optionsH.add_argument(f"user-data-dir={path_to_profile}")    # Set the profile directory.
+    optionsH.add_argument(f"profile-directory=Default")          # same thing here.
+
+    driver = webdriver.Chrome(options=optionsH)
+    driver.get(web_site)
+    while(True):
+        if(element_exists(driver,By.ID,"ds_calclass")):
+            print("Login in")
+            break
+driver.quit();
+
+driver = webdriver.ChromeOptions(options=options)
+driver.get(web_site)     
+time.sleep(5)
+
 ##try:
 ##    driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[4]/td[2]")
 ##    print(Fore.RED + "FATAL ERROR: "+ Style.RESET_ALL+" Profile not found")
