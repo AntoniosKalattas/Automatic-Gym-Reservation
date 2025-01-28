@@ -21,11 +21,14 @@ with open("chromeProfilePath.txt", "r") as file:
 #path_to_profile = "/Users/admin/Library/Application Support/Google/Chrome/"                                  #path to chrome profile (si you won't need to login).                                                                                    #name of the profile folder.
 #time options: 1    2    3     4     5     6     7     8
 #              7:45 9:30 11:15 13:00 14:45 16:45 18:30 20:15
-print(sys.argv[1])
-time_option = str(sys.argv[1])                                                                               #time for reservation.
+print("Time option daily"+sys.argv[1])
+time_option = str(sys.argv[1])                         #time for reservation.
+time_option_Saturday = str(sys.argv[2])                #time for Saturday 
+print("Time option daily"+sys.argv[1])
+
 web_site = "https://applications2.ucy.ac.cy/sportscenter/online_reservations_pck2.insert_reservation?p_lang="# website link.
 current_datetime = datetime.now()       #current time.
-current_day = str(sys.argv[2]) #current day.
+current_day = str(sys.argv[3]) #current day.
 print("Day: "+ current_day)
 data =[]
 
@@ -103,7 +106,14 @@ for i in range(2):
 time.sleep(3)
 try:
     driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td/table/tbody/tr/td[3]/select").click()             #click the time dropdown box
-    driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td/table/tbody/tr/td[3]/select/option["+time_option+"]").click()   #choose the time
+    try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td/table/tbody/tr/td[3]/select/option["+time_option+"]").click()   #choose the time. 
+    except NoSuchElementException:
+        try:
+            driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td/table/tbody/tr/td[3]/select/option["+time_option_Saturday+"]").click()   #in case the day is a Saturday 
+        except NoSuchElementException:
+            print(Fore.RED + "ERROR: " +Style.RESET_ALL + "No such time could be found, check website for any changes in HTML code.", file=sys.stderr)
+            sys.exit(1)    
     pbar.update(1)
 except NoSuchElementException:
     print(Fore.RED + "ERROR: " +Style.RESET_ALL + "No such time could be found, check website for any changes in HTML code.", file=sys.stderr)
