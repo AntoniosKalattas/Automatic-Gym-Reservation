@@ -64,7 +64,7 @@ if(element_exists(driver,By.CLASS_NAME, "login-paginated-page")):
             break
 driver.quit();
 
-driver = webdriver.ChromeOptions(options=options)
+driver = webdriver.Chrome(options=options)
 driver.get(web_site)     
 time.sleep(5)
 
