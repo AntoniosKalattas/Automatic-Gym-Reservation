@@ -40,7 +40,7 @@ UCYGYM_BOT is an automation tool for reserving gym sessions at the University of
 
 3. **Set Up ChromeDriver**:
 
-   - Download ChromeDriver for your OS.
+   - Download [ChromeDriver](https://googlechromelabs.github.io/chrome-for-testing/) for your OS.
    - Place it in your system's PATH or specify its location in the script.
 
 ## Usage
