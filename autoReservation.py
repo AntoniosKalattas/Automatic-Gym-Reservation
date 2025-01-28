@@ -32,7 +32,7 @@ options.add_argument('--disable-dev-shm-usage')             # Overcome limited r
 options.add_argument('--disable-gpu')                       # Disable GPU (important for headless).
 options.add_argument('--window-size=1920,1080')             #  Set window size to avoid issues with headless mode.
 options.add_argument(f"user-data-dir={path_to_profile}")    # Set the profile directory.
-options.add_argument(f"profile-directory={profile_name}")   # same thing here.
+options.add_argument(f"profile-directory=Default")   # same thing here.
 
 driver = webdriver.Chrome(options=options)  # Optional argument, if not specified will search path.
 driver.get(web_site)
