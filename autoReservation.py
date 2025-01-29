@@ -78,7 +78,6 @@ time.sleep(5)
 ##except NoSuchElementException:
 ##    print(Fore.GREEN+"Profile Found!")
 
-
 #Screen 1
 driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td[2]/select/option[4]").click() #select the "Γυμναστιριο"
 driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[4]/td[2]/input").click()            #tick the terms
