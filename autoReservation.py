@@ -79,6 +79,12 @@ time.sleep(5)
 ##    print(Fore.GREEN+"Profile Found!")
 
 #Screen 1
+if(element_exists(driver, By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td[2]/select/option[4]")==False): # in case the website does not recognise user.
+    time.sleep(3)
+    driver.find_element(By.XPATH, "/html/body/div[2]/div/div[2]/div[1]/ul/li[1]").click()
+    time.sleep(5)
+    driver.get(web_site)
+    
 driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[2]/td[2]/select/option[4]").click() #select the "Γυμναστιριο"
 driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[4]/td[2]/input").click()            #tick the terms
 driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/form/table/tbody/tr[5]/td[2]/div/button").click()       #click the submit button
