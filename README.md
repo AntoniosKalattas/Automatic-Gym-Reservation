@@ -1,4 +1,5 @@
-# UCYGYM_BOT
+# Automatic-Gym-Reservation
+
 
 UCYGYM_BOT is an automation tool for reserving gym sessions at the University of Cyprus. It uses Python and Selenium WebDriver to interact with the UCY gym reservation system, automating the entire booking process.
 
