@@ -73,7 +73,6 @@ class GymReservationBot:
             if not path:
                 raise ValueError("Profile path is empty")
                 
-            self.logger.info(f"Loaded Chrome profile path: {path}")
             return path
             
         except Exception as e:
@@ -116,7 +115,6 @@ class GymReservationBot:
             options = self.create_chrome_options(headless)
             self.driver = webdriver.Chrome(options=options)
             self.wait = WebDriverWait(self.driver, self.config.timeout)
-            self.logger.info("Chrome driver initialized successfully")
             return True
             
         except WebDriverException as e:
@@ -297,29 +295,39 @@ class GymReservationBot:
             self.logger.error(f"Error during time selection and submission: {e}")
             return False
     
-    def check_reservation_result(self) -> Tuple[bool, str]:
+    def check_reservation_result(self, test: bool = False) -> Tuple[bool, str]:
         """Check if reservation was successful"""
         time.sleep(3)
-        
+
         try:
             error_element = self.driver.find_element(By.CLASS_NAME, "text-danger")
             if error_element:
                 error_content = self.driver.find_element(By.CLASS_NAME, "prntcontent")
                 error_message = error_content.text if error_content else "Unknown error"
-                return False, error_message
+                if test:
+                    return True, "Done"
+                else:
+                    return False, error_message
                 
         except NoSuchElementException:
             return True, "Reservation completed successfully"
         
         return True, "Reservation completed successfully"
     
-    def make_reservation(self, time_option: str, saturday_time_option: str, day: str) -> bool:
+    def make_reservation(self, time_option: str, saturday_time_option: str, day: str, headless: bool, test: bool = False) -> bool:
         """Main method to execute the reservation process"""
         self.progress_bar = tqdm(total=6, desc="Reservation Progress")
+
+        print(f"{Fore.CYAN}Starting gym reservation bot...")
+        print(f"Daily time option: {time_option}")
+        print(f"Saturday time option: {saturday_time_option}")
+        print(f"Day: {day}")
+        print(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Headless switch: {'true' if headless else 'false'}")
         
         try:
             # Initialize driver
-            if not self.initialize_driver():
+            if not self.initialize_driver(headless = headless):
                 return False
             self.progress_bar.update(1)
             
@@ -344,7 +352,7 @@ class GymReservationBot:
             self.progress_bar.update(1)
             
             # Check result
-            success, message = self.check_reservation_result()
+            success, message = self.check_reservation_result(test)
             self.progress_bar.update(1)
             
             if success:
@@ -374,49 +382,3 @@ class GymReservationBot:
                 self.logger.info("Driver closed successfully")
             except Exception as e:
                 self.logger.warning(f"Error closing driver: {e}")
-
-def parse_arguments() -> Tuple[str, str, str]:
-    """Parse command line arguments with validation"""
-    if len(sys.argv) != 4:
-        print(f"{Fore.RED}Usage: {sys.argv[0]} <time_option> <saturday_time_option> <day>")
-        print("Time options: 1=7:45, 2=9:30, 3=11:15, 4=13:00, 5=14:45, 6=16:45, 7=18:30, 8=20:15")
-        sys.exit(1)
-    
-    time_option = sys.argv[1]
-    saturday_time_option = sys.argv[2]
-    day = sys.argv[3]
-    
-    # Validate time options
-    valid_options = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
-    if time_option not in valid_options or saturday_time_option not in valid_options:
-        print(f"{Fore.RED}Invalid time option. Valid options: {', '.join(valid_options)}")
-        sys.exit(1)
-    
-    return time_option, saturday_time_option, day
-
-def main():
-    """Main entry point"""
-    try:
-        time_option, saturday_time_option, day = parse_arguments()
-        
-        print(f"{Fore.CYAN}Starting gym reservation bot...")
-        print(f"Daily time option: {time_option}")
-        print(f"Saturday time option: {saturday_time_option}")
-        print(f"Day: {day}")
-        print(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-        config = ReservationConfig()
-        bot = GymReservationBot(config)
-        
-        success = bot.make_reservation(time_option, saturday_time_option, day)
-        sys.exit(0 if success else 1)
-        
-    except KeyboardInterrupt:
-        print(f"\n{Fore.YELLOW}Process interrupted by user")
-        sys.exit(130)
-    except Exception as e:
-        print(f"{Fore.RED}Fatal error: {e}")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
