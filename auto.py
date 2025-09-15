@@ -3,6 +3,7 @@ import time
 import subprocess
 from datetime import datetime, timedelta
 import autoReservation
+from emailSystem import send_email
 
 ##########################################################################
 # Monday to Friday
@@ -14,10 +15,13 @@ time_option = 7
 # time options: 9    10    11
 #               8:45 10:30 12:15
 time_option2 = 11
+
+userEmail = "example@host.com"
 ##########################################################################
 
 # Global variable to track reservation success
 reservation_successful = False
+sendEmailNotif = False
 last_attempt_date = None
 
 def run_main_script() -> bool:
@@ -29,6 +33,7 @@ def run_main_script() -> bool:
     # Reset success flag if it's a new day
     if last_attempt_date != today.date():
         reservation_successful = False
+        sendEmailNotif = (userEmail == "example@host.com");
         last_attempt_date = today.date()
     
     # If already successful today, skip
@@ -52,10 +57,16 @@ def run_main_script() -> bool:
             return True
         else:
             print("❌ Reservation failed")
+            if(sendEmailNotif== False): 
+                send_email(userEmail)
+                sendEmailNotif = True
             return False
             
     except Exception as e:
         print(f"❌ Error during reservation: {e}")
+        if(sendEmailNotif== False): 
+            send_email(userEmail, e)
+            sendEmailNotif = True
         return False
 
 def run_retry_script() -> bool:
@@ -68,7 +79,7 @@ def run_retry_script() -> bool:
     return run_main_script()
 
 # Schedule the primary attempt at 8:00 AM
-schedule.every().day.at("00:36").do(run_main_script)
+schedule.every().day.at("08:00").do(run_main_script)
 
 # Schedule retry attempts only if previous failed
 schedule.every().day.at("08:06").do(run_retry_script)
