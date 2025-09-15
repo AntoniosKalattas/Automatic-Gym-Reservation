@@ -33,30 +33,53 @@ Automatic-Gym-Reservation is an automation tool for reserving gym sessions at my
    pip install -r requirements.txt
    ```
 
-   Ensure Electron dependencies are installed via npm(Only for UI perposes):
+## Setup
 
-   ```bash
-   npm install
-   ```
+### Set Up ChromeDriver
 
-3. **Set Up ChromeDriver**:
+- Download [ChromeDriver](https://googlechromelabs.github.io/chrome-for-testing/) for your OS.
+- Place it in your system's PATH or specify its location in the script.
 
-   - Download [ChromeDriver](https://googlechromelabs.github.io/chrome-for-testing/) for your OS.
-   - Place it in your system's PATH or specify its location in the script.
-   
-4. **Copy the path to chrome profile**:
-   
-   - enter `chrome://version` in chrome url
-   - copy the location of `profile path` inside the `chromeProfilePath.txt` file
+### Copy the path to chrome profile
+
+- enter `chrome://version` in chrome url
+- copy the location of `profile path` inside the `chromeProfilePath.txt` file
+
+### Email Setup (optional)
+
+1.  **Enable 2-Step Verification:** If you haven't already, you'll need to enable 2-Step Verification on your Google account. You can do that here: [https://myaccount.google.com/security](https://myaccount.google.com/security)
+
+2.  **Generate an App Password:**
+    *   Go to this page: [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+    *   When prompted, select "Other (Custom name)" for the app and give it a name like "Gym Reservation".
+    *   Click "Generate".
+
+3.  **Use the App Password:**
+    *   Google will give you a 16-digit password. Copy this password.
+    *   Create a `.env` file in the root of the project.
+    *   Add the following lines to the `.env` file, replacing `<your_email>` and `<your_app_password>` with your actual email and the 16-digit App Password you just generated:
+        ```
+        EMAIL_USER="<your_email>"
+        EMAIL_PASSWORD="<your_app_password>"
+        ```
 
 ## Usage
 
-### Start with Electron (Optional)
+1.  **Run the self-test script** to ensure that everything is set up correctly:
+    ```bash
+    python selfTest.py
+    ```
+2.  **Run the main script** to start the automatic reservation process:
+    ```bash
+    python auto.py
+    ```
 
-For a GUI-based experience, launch the Electron app:
-
+    
+# How to setup automatic reservation
+   - Choose the desired time of the reservation in `auto.py`
+   - In your LINUX server run the command
 ```bash
-npm start
+nohup python3 auto.py &
 ```
 
 ## Files and Structure
@@ -72,13 +95,21 @@ npm start
 - **Element Not Found**: Verify that the UCY reservation system hasn't changed its structure. Update the selectors in the scripts if necessary.
 - **Node.js Issues**: Ensure Node.js is installed to run Electron.
 
-# How to setup automatic reservation
-   - Choose the desired time of the reservation in `auto.py`
-   - In your LINUX server run the command
+# UI Version (not Supported)
+
+   Ensure Electron dependencies are installed via npm(Only for UI perposes):
+
+   ```bash
+   npm install
+   ```
+
+### Start with Electron (Optional)
+
+For a GUI-based experience, launch the Electron app:
+
 ```bash
-nohup python3 auto.py &
+npm start
 ```
-     
 
 
 ## Contributing
