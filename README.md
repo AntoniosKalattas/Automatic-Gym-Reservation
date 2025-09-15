@@ -39,17 +39,46 @@ Automatic-Gym-Reservation is an automation tool for reserving gym sessions at my
    npm install
    ```
 
-3. **Set Up ChromeDriver**:
+## Setup
 
-   - Download [ChromeDriver](https://googlechromelabs.github.io/chrome-for-testing/) for your OS.
-   - Place it in your system's PATH or specify its location in the script.
-   
-4. **Copy the path to chrome profile**:
-   
-   - enter `chrome://version` in chrome url
-   - copy the location of `profile path` inside the `chromeProfilePath.txt` file
+### Set Up ChromeDriver
+
+- Download [ChromeDriver](https://googlechromelabs.github.io/chrome-for-testing/) for your OS.
+- Place it in your system's PATH or specify its location in the script.
+
+### Copy the path to chrome profile
+
+- enter `chrome://version` in chrome url
+- copy the location of `profile path` inside the `chromeProfilePath.txt` file
+
+### Email Setup
+
+1.  **Enable 2-Step Verification:** If you haven't already, you'll need to enable 2-Step Verification on your Google account. You can do that here: [https://myaccount.google.com/security](https://myaccount.google.com/security)
+
+2.  **Generate an App Password:**
+    *   Go to this page: [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+    *   When prompted, select "Other (Custom name)" for the app and give it a name like "Gym Reservation".
+    *   Click "Generate".
+
+3.  **Use the App Password:**
+    *   Google will give you a 16-digit password. Copy this password.
+    *   Create a `.env` file in the root of the project.
+    *   Add the following lines to the `.env` file, replacing `<your_email>` and `<your_app_password>` with your actual email and the 16-digit App Password you just generated:
+        ```
+        EMAIL_USER="<your_email>"
+        EMAIL_PASSWORD="<your_app_password>"
+        ```
 
 ## Usage
+
+1.  **Run the self-test script** to ensure that everything is set up correctly:
+    ```bash
+    python selfTest.py
+    ```
+2.  **Run the main script** to start the automatic reservation process:
+    ```bash
+    python auto.py
+    ```
 
 ### Start with Electron (Optional)
 
@@ -78,7 +107,6 @@ npm start
 ```bash
 nohup python3 auto.py &
 ```
-     
 
 
 ## Contributing
