@@ -33,12 +33,6 @@ Automatic-Gym-Reservation is an automation tool for reserving gym sessions at my
    pip install -r requirements.txt
    ```
 
-   Ensure Electron dependencies are installed via npm(Only for UI perposes):
-
-   ```bash
-   npm install
-   ```
-
 ## Setup
 
 ### Set Up ChromeDriver
@@ -51,7 +45,7 @@ Automatic-Gym-Reservation is an automation tool for reserving gym sessions at my
 - enter `chrome://version` in chrome url
 - copy the location of `profile path` inside the `chromeProfilePath.txt` file
 
-### Email Setup
+### Email Setup (optional)
 
 1.  **Enable 2-Step Verification:** If you haven't already, you'll need to enable 2-Step Verification on your Google account. You can do that here: [https://myaccount.google.com/security](https://myaccount.google.com/security)
 
@@ -80,12 +74,12 @@ Automatic-Gym-Reservation is an automation tool for reserving gym sessions at my
     python auto.py
     ```
 
-### Start with Electron (Optional)
-
-For a GUI-based experience, launch the Electron app:
-
+    
+# How to setup automatic reservation
+   - Choose the desired time of the reservation in `auto.py`
+   - In your LINUX server run the command
 ```bash
-npm start
+nohup python3 auto.py &
 ```
 
 ## Files and Structure
@@ -101,11 +95,20 @@ npm start
 - **Element Not Found**: Verify that the UCY reservation system hasn't changed its structure. Update the selectors in the scripts if necessary.
 - **Node.js Issues**: Ensure Node.js is installed to run Electron.
 
-# How to setup automatic reservation
-   - Choose the desired time of the reservation in `auto.py`
-   - In your LINUX server run the command
+# UI Version (not Supported)
+
+   Ensure Electron dependencies are installed via npm(Only for UI perposes):
+
+   ```bash
+   npm install
+   ```
+
+### Start with Electron (Optional)
+
+For a GUI-based experience, launch the Electron app:
+
 ```bash
-nohup python3 auto.py &
+npm start
 ```
 
 
