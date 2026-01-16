@@ -126,3 +126,42 @@ Created by [Antonios Kalattas](https://github.com/AntoniosKalattas).
 
 ---
 ![My Project Logo](https://github.com/AntoniosKalattas/UCYGYM_BOT/blob/main/img/mainScreen.png)
+
+
+## Troubleshooting
+
+- **Selenium Errors**: Ensure that ChromeDriver matches your Chrome browser version.
+- **Element Not Found**: Verify that the UCY reservation system hasn't changed its structure. Update the selectors in the scripts if necessary.
+- **Node.js Issues**: Ensure Node.js is installed to run Electron.
+
+# UI Version (not Supported)
+
+   Ensure Electron dependencies are installed via npm(Only for UI perposes):
+
+   ```bash
+   npm install
+   ```
+
+### Start with Electron (Optional)
+
+For a GUI-based experience, launch the Electron app:
+
+```bash
+npm start
+```
+
+
+## Contributing
+
+Contributions are welcome! Feel free to fork the repository, submit a pull request, or open an issue.
+
+## License
+
+This project is licensed under the ISC License. See the `LICENSE` file for details.
+
+## Author
+
+Created by [Antonios Kalattas](https://github.com/AntoniosKalattas).
+
+---
+![My Project Logo](https://github.com/AntoniosKalattas/UCYGYM_BOT/blob/main/img/mainScreen.png)
