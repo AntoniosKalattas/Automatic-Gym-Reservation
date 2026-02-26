@@ -8,11 +8,11 @@ from selenium.webdriver.common.by import By
 
 load_dotenv()
 
-def test_notifications(notifier):
+def test_notifications(notifier:Notifier):
     print("\n--- 1. Testing Notifications ---")
-    # (Keeping this short as we know it works from your log)
-    print("✅ Skipping Notification Test (Confirmed working previously)")
-    return True
+    if(notifier.send_telegram("🔥Yoh, the UCY Gym Bot is connected!") and  notifier.send_email(os.getenv("USER_EMAIL"),"test", "self test email.")):
+        return True
+    return False
 
 def test_navigation():
     print("\n--- 2. Testing Website Navigation ---")
@@ -58,7 +58,7 @@ def test_navigation():
         bot._click(By.CSS_SELECTOR, "button[type='submit']")
         time.sleep(1)
 
-        target_day = (datetime.now() + timedelta(days=1)).day
+        target_day = (datetime.now() + timedelta(days=10)).day
         print(f"   -> Attempting to click Day {target_day}...")
         
         try:

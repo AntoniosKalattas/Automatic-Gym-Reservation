@@ -22,12 +22,12 @@ RETRY_DELAY = 60
 # YOUR CUSTOM SCHEDULE
 # 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday
 WEEKLY_SCHEDULE = {
-    0: 4,   # Monday    -> Option 5 (14:45)
-    1: 6,   # Tuesday   -> Option 6 (16:45)
-    2: 3,   # Wednesday -> Option 3 (11:15)
-    3: 7,   # Thursday  -> Option 7 (18:30)
-    4: 6,   # Friday    -> Option 6 (14:45)
-    5: 11,  # Saturday  -> Option 11 (12:15)
+    0: 4,   # Monday    -> Option 4
+    1: 6,   # Tuesday   -> Option 6 
+    2: 3,   # Wednesday -> Option 3 
+    3: 4,   # Thursday  -> Option 4 
+    4: 6,   # Friday    -> Option 6 
+    5: 11,  # Saturday  -> Option 11
     6: 11   # Sunday    -> Option 11
 }
 

@@ -23,13 +23,14 @@ class Notifier:
         data = {"chat_id": self.tg_chat_id, "text": message}
         try:
             requests.post(url, data=data, timeout=5)
+            return True
         except Exception as e:
             print(f"⚠️ Telegram send failed: {e}")
-
+            return False
     def send_email(self, recipient: str, subject: str, body: str):
         if not self.email_user or not self.email_pass:
             print("⚠️ Email credentials missing.")
-            return
+            return False
 
         try:
             msg = MIMEMultipart()
@@ -43,8 +44,10 @@ class Notifier:
             server.login(self.email_user, self.email_pass)
             server.sendmail(self.email_user, recipient, msg.as_string())
             server.quit()
+            return True
         except Exception as e:
             print(f"⚠️ Email send failed: {e}")
+            return False
 
     def alert(self, success: bool, recipient: str, details: str = ""):
         """Sends notifications based on success/failure."""

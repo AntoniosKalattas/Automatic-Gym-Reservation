@@ -79,7 +79,7 @@ class GymReservationBot:
                 self.wait.until(EC.element_to_be_clickable((By.XPATH, day_xpath))).click()
             except TimeoutException:
                 try:
-                    next_month_btn = self.driver.find_element(By.XPATH, "//button[contains(@class, 'next-month')]") 
+                    next_month_btn = self.driver.find_element(By.XPATH, '//*[@id="contentRow"]/center/table[2]/tbody/tr/td[2]/div/button') 
                     next_month_btn.click()
                     time.sleep(1)
                     self.wait.until(EC.element_to_be_clickable((By.XPATH, day_xpath))).click()
