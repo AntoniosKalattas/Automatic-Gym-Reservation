@@ -7,7 +7,8 @@ Automatic-Gym-Reservation is an automation tool for reserving gym sessions at my
 
 - **Automated Reservations**: Book gym sessions quickly without manual interaction.
 - **Cross-Platform Compatibility**: Works on Windows, macOS, and Linux systems with Python and Selenium.
-- **User-Friendly Setup**: Easily configurable through the provided scripts.
+- **Notification System**: Receive alerts if a reservation fails so you can complete the process manually.
+- **Self-Test (or Pre-Check)**: Verify the system state for any incompatibilities before starting the process.
 
 ## Prerequisites
 
