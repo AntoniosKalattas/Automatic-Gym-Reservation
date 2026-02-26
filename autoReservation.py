@@ -13,11 +13,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class GymReservationBot:
-    def __init__(self, headless=True):
+    def __init__(self, headless=True, testMode=False):
         self.url = "https://applications2.ucy.ac.cy/sportscenter/online_reservations_pck2.insert_reservation?p_lang="
         self.logger = self._setup_logging()
         self.driver = self._init_driver(headless)
         self.wait = WebDriverWait(self.driver, 10) 
+        self.testMode = testMode
 
     def _setup_logging(self):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,9 +27,6 @@ class GymReservationBot:
     def _init_driver(self, headless):
         options = Options()
         args = ['--no-sandbox', '--disable-gpu', '--disable-extensions', '--disable-dev-shm-usage']
-        
-        # if headless:
-        #     args.append('--headless')
         
         for arg in args:
             options.add_argument(arg)
@@ -58,7 +56,7 @@ class GymReservationBot:
             if "login" in self.driver.current_url:
                 return False, "Login session expired. Please manual login."
 
-            # 2. Select Gymnasium (With Fix Logic)
+            # 2. Select Gym
             if not self._click(By.CSS_SELECTOR, "select option:nth-child(4)"):
                 self.logger.warning("Applying 'Home Button' fix...")
                 fix_xpath = "/html/body/div[2]/div/div[2]/div[1]/ul/li[1]/a"
@@ -81,7 +79,7 @@ class GymReservationBot:
                 try:
                     next_month_btn = self.driver.find_element(By.XPATH, '//*[@id="contentRow"]/center/table[2]/tbody/tr/td[2]/div/button') 
                     next_month_btn.click()
-                    time.sleep(1)
+                    time.sleep(4)
                     self.wait.until(EC.element_to_be_clickable((By.XPATH, day_xpath))).click()
                 except:
                     return False, f"Day {target_day} not found."
@@ -136,11 +134,17 @@ class GymReservationBot:
                         confirm_btn = self.driver.find_element(By.XPATH, fallback_xpath)
                         self.driver.execute_script("arguments[0].click();", confirm_btn)
                     except:
+                        if(self.testMode):
+                            return True
                         return False, "Final Confirm button not found."
 
             except Exception as e:
+                if(self.testMode):
+                    return True
                 return False, f"Error during submission: {str(e)}"
 
+            if(self.testMode):
+                return True
             # 7. Verification (FINAL CORRECTED VERSION)
             time.sleep(2)
             
