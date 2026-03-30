@@ -17,7 +17,7 @@ RETRY_DELAY = 60
 
 # Time Options Reference:
 # 1=07:45, 2=09:30, 3=11:15, 4=13:00, 5=14:45, 6=16:45, 7=18:30, 8=20:15
-# Saturday: 9=08:45, 10=10:30, 11=12:15
+# Saturday: 1=08:45, 2=10:30, 3=12:15
 
 # YOUR CUSTOM SCHEDULE
 # 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday
@@ -28,7 +28,6 @@ WEEKLY_SCHEDULE = {
     3: 4,   # Thursday  -> Option 4 
     4: 6,   # Friday    -> Option 6 
     5: 11,  # Saturday  -> Option 11
-    6: 11   # Sunday    -> Option 11
 }
 
 def get_state():
