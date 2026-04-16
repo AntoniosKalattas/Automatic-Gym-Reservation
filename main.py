@@ -23,11 +23,11 @@ RETRY_DELAY = 60
 # 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday
 WEEKLY_SCHEDULE = {
     0: 4,   # Monday    -> Option 4
-    1: 6,   # Tuesday   -> Option 6 
-    2: 3,   # Wednesday -> Option 3 
+    1: 5,   # Tuesday   -> Option 6 
+    2: 8,   # Wednesday -> Option 3 
     3: 4,   # Thursday  -> Option 4 
-    4: 6,   # Friday    -> Option 6 
-    5: 11,  # Saturday  -> Option 11
+    4: 4,   # Friday    -> Option 6 
+    5: 3,  # Saturday  -> Option 11
 }
 
 def get_state():
