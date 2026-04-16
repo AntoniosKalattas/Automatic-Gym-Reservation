@@ -192,10 +192,12 @@ export default function App() {
   const fetchAll = useCallback(async () => {
     if (!ngrokUrl) return;
     setLoading(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
     try {
       const [schedRes, statRes] = await Promise.all([
-        fetch(`${ngrokUrl}/schedule`, { headers: NGROK_HEADERS }),
-        fetch(`${ngrokUrl}/status`, { headers: NGROK_HEADERS }),
+        fetch(`${ngrokUrl}/schedule`, { headers: NGROK_HEADERS, signal: controller.signal }),
+        fetch(`${ngrokUrl}/status`, { headers: NGROK_HEADERS, signal: controller.signal }),
       ]);
       if (!schedRes.ok || !statRes.ok) throw new Error('Bad response');
       const schedJson = await schedRes.json();
@@ -205,8 +207,12 @@ export default function App() {
       setConnected(true);
     } catch (e) {
       setConnected(false);
-      Alert.alert('Connection failed', `Could not reach ${ngrokUrl}\n\nMake sure api.py is running and ngrok is active.`);
+      const msg = e.name === 'AbortError'
+        ? 'Request timed out after 10 seconds.'
+        : `Could not reach ${ngrokUrl}`;
+      Alert.alert('Connection failed', `${msg}\n\nMake sure api.py is running and ngrok is active.`);
     } finally {
+      clearTimeout(timer);
       setLoading(false);
     }
   }, [ngrokUrl]);
