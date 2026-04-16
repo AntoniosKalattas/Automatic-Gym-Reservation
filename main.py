@@ -76,11 +76,20 @@ def job():
         
         # Pass the EXACT time option we want
         success, msg = bot.make_reservation(target_time_opt, target_day_num)
-        
+        target_time_opt_to_time_map = {
+            1: "07:45",
+            2: "09:30", 
+            3: "11.15",
+            4: "13:00",
+            5: "14:45",
+            6: "16:45",
+            7: "18:30",
+            8: "20:15"
+        }
         if success:
             print(f"✅ Success: {msg}")
             save_state(today_str, "SUCCESS")
-            notifier.alert(True, USER_EMAIL, f"Booked {target_date.strftime('%A')} at option {target_time_opt}")
+            notifier.alert(True, USER_EMAIL, f"Booked {target_date.strftime('%A')} at option {target_time_opt_to_time_map.get(target_time_opt)}")
             return
         else:
             print(f"⚠️ Failed: {msg}")
