@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Alert,
   StatusBar,
   Platform,
   KeyboardAvoidingView,
@@ -76,7 +75,7 @@ function ConnectionBar({ url, onSave }) {
 
   const handleSave = () => {
     const normalized = normalizeUrl(input);
-    if (!normalized) { Alert.alert('Error', 'Enter a valid ngrok URL'); return; }
+    if (!normalized) return;
     onSave(normalized);
     setEditing(false);
   };
@@ -174,6 +173,8 @@ export default function App() {
   const [saving, setSaving] = useState(false);
   const [connected, setConnected] = useState(null); // null=unknown, true, false
   const [activeTab, setActiveTab] = useState('schedule'); // 'schedule' | 'status'
+  const [error, setError] = useState('');
+  const [saveMsg, setSaveMsg] = useState(''); // success or error message for save
 
   // Load saved URL on mount
   useEffect(() => {
@@ -192,6 +193,7 @@ export default function App() {
   const fetchAll = useCallback(async () => {
     if (!ngrokUrl) return;
     setLoading(true);
+    setError('');
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 10000);
     try {
@@ -199,7 +201,7 @@ export default function App() {
         fetch(`${ngrokUrl}/schedule`, { headers: NGROK_HEADERS, signal: controller.signal }),
         fetch(`${ngrokUrl}/status`, { headers: NGROK_HEADERS, signal: controller.signal }),
       ]);
-      if (!schedRes.ok || !statRes.ok) throw new Error('Bad response');
+      if (!schedRes.ok || !statRes.ok) throw new Error('Bad response from server');
       const schedJson = await schedRes.json();
       const statJson = await statRes.json();
       setSchedule(schedJson.schedule || {});
@@ -207,10 +209,7 @@ export default function App() {
       setConnected(true);
     } catch (e) {
       setConnected(false);
-      const msg = e.name === 'AbortError'
-        ? 'Request timed out after 10 seconds.'
-        : `Could not reach ${ngrokUrl}`;
-      Alert.alert('Connection failed', `${msg}\n\nMake sure api.py is running and ngrok is active.`);
+      setError(e.name === 'AbortError' ? 'Connection timed out. Is api.py running?' : 'Could not reach the API. Check your URL.');
     } finally {
       clearTimeout(timer);
       setLoading(false);
@@ -227,8 +226,9 @@ export default function App() {
   };
 
   const handleSaveSchedule = async () => {
-    if (!ngrokUrl) { Alert.alert('No URL', 'Set your ngrok URL first.'); return; }
+    if (!ngrokUrl) { setSaveMsg('error:Set your API URL first.'); return; }
     setSaving(true);
+    setSaveMsg('');
     try {
       const res = await fetch(`${ngrokUrl}/schedule`, {
         method: 'POST',
@@ -237,9 +237,9 @@ export default function App() {
       });
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || 'Unknown error');
-      Alert.alert('Saved', 'Schedule updated successfully!');
+      setSaveMsg('ok:Schedule saved!');
     } catch (e) {
-      Alert.alert('Save failed', e.message);
+      setSaveMsg(`error:${e.message}`);
     } finally {
       setSaving(false);
     }
@@ -272,6 +272,16 @@ export default function App() {
 
       {/* Connection bar */}
       <ConnectionBar url={ngrokUrl} onSave={handleSaveUrl} />
+
+      {/* Error banner */}
+      {error ? (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>{error}</Text>
+          <TouchableOpacity onPress={() => setError('')}>
+            <Text style={styles.errorBannerDismiss}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       {/* Tabs */}
       <View style={styles.tabs}>
@@ -319,16 +329,23 @@ export default function App() {
             }
 
             {Object.keys(schedule).length > 0 && (
-              <TouchableOpacity
-                style={[styles.saveScheduleBtn, saving && styles.saveScheduleBtnDisabled]}
-                onPress={handleSaveSchedule}
-                disabled={saving}
-              >
-                {saving
-                  ? <ActivityIndicator color="#fff" />
-                  : <Text style={styles.saveScheduleBtnText}>Save Schedule</Text>
-                }
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity
+                  style={[styles.saveScheduleBtn, saving && styles.saveScheduleBtnDisabled]}
+                  onPress={handleSaveSchedule}
+                  disabled={saving}
+                >
+                  {saving
+                    ? <ActivityIndicator color="#fff" />
+                    : <Text style={styles.saveScheduleBtnText}>Save Schedule</Text>
+                  }
+                </TouchableOpacity>
+                {saveMsg ? (
+                  <Text style={saveMsg.startsWith('ok:') ? styles.saveMsgOk : styles.saveMsgErr}>
+                    {saveMsg.slice(3)}
+                  </Text>
+                ) : null}
+              </>
             )}
           </>
         )}
@@ -606,6 +623,42 @@ const styles = StyleSheet.create({
   statusEmptyText: {
     color: C.textSecondary,
     fontSize: 14,
+  },
+
+  // error banner
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(244,67,54,0.15)',
+    borderBottomWidth: 1,
+    borderBottomColor: C.red,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  errorBannerText: {
+    color: C.red,
+    fontSize: 13,
+    flex: 1,
+  },
+  errorBannerDismiss: {
+    color: C.red,
+    fontSize: 14,
+    paddingLeft: 12,
+  },
+
+  // save message
+  saveMsgOk: {
+    color: C.green,
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  saveMsgErr: {
+    color: C.red,
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 8,
   },
 
   // empty state
