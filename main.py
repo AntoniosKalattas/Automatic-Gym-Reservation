@@ -12,23 +12,37 @@ load_dotenv()
 # --- CONFIGURATION ---
 USER_EMAIL = os.getenv("USER_EMAIL")
 STATE_FILE = "reservation_state.json"
+SCHEDULE_FILE = "schedule.json"
 MAX_RETRIES = 5
-RETRY_DELAY = 60 
+RETRY_DELAY = 60
 
 # Time Options Reference:
 # 1=07:45, 2=09:30, 3=11:15, 4=13:00, 5=14:45, 6=16:45, 7=18:30, 8=20:15
 # Saturday: 1=08:45, 2=10:30, 3=12:15
 
-# YOUR CUSTOM SCHEDULE
-# 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday
-WEEKLY_SCHEDULE = {
-    0: 4,   # Monday    -> Option 4
-    1: 6,   # Tuesday   -> Option 6 
-    2: 3,   # Wednesday -> Option 3 
-    3: 4,   # Thursday  -> Option 4 
-    4: 6,   # Friday    -> Option 6 
-    5: 11,  # Saturday  -> Option 11
+# Default schedule (used only if schedule.json doesn't exist)
+# 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday
+_DEFAULT_SCHEDULE = {
+    0: 4,   # Monday
+    1: 6,   # Tuesday
+    2: 3,   # Wednesday
+    3: 4,   # Thursday
+    4: 6,   # Friday
+    5: 11,  # Saturday
 }
+
+
+def load_weekly_schedule():
+    """Load schedule from schedule.json (set via mobile app API)."""
+    if not os.path.exists(SCHEDULE_FILE):
+        return _DEFAULT_SCHEDULE.copy()
+    with open(SCHEDULE_FILE, "r") as f:
+        try:
+            raw = json.load(f)
+            # Keys are stored as strings in JSON, convert to int
+            return {int(k): v for k, v in raw.items()}
+        except Exception:
+            return _DEFAULT_SCHEDULE.copy()
 
 def get_state():
     if not os.path.exists(STATE_FILE):
@@ -58,8 +72,9 @@ def job():
     target_day_num = target_date.day
     target_weekday = target_date.weekday() # 0 = Monday, 6 = Sunday
 
-    # 2. Get the specific time for that day
-    target_time_opt = WEEKLY_SCHEDULE.get(target_weekday, 7) # Default to 7 if missing
+    # 2. Get the specific time for that day (reload each run to pick up mobile changes)
+    WEEKLY_SCHEDULE = load_weekly_schedule()
+    target_time_opt = WEEKLY_SCHEDULE.get(target_weekday, 7)  # Default to 7 if missing
 
     print(f"🚀 Starting reservation for {target_date.strftime('%A %d/%m')} at Time Option {target_time_opt}...")
     
