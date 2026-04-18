@@ -1,0 +1,13 @@
+version: "2"
+authtoken: YOUR_NGROK_AUTHTOKEN
+
+tunnels:
+  api:
+    proto: http
+    addr: 5001
+    inspect: true
+
+  expo:
+    proto: http
+    addr: 8081
+    inspect: true
