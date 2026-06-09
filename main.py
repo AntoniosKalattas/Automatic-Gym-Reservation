@@ -23,12 +23,12 @@ RETRY_DELAY = 60
 # Default schedule (used only if schedule.json doesn't exist)
 # 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday
 _DEFAULT_SCHEDULE = {
-    0: 4,   # Monday
-    1: 6,   # Tuesday
-    2: 3,   # Wednesday
-    3: 4,   # Thursday
-    4: 6,   # Friday
-    5: 11,  # Saturday
+    0: 5,   # Monday
+    1: 5,   # Tuesday
+    2: 5,   # Wednesday
+    3: 5,   # Thursday
+    4: 5,   # Friday
+    5: 3,  # Saturday
 }
 
 
