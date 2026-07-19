@@ -175,6 +175,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('schedule'); // 'schedule' | 'status'
   const [error, setError] = useState('');
   const [saveMsg, setSaveMsg] = useState(''); // success or error message for save
+  const [sniperDay, setSniperDay] = useState('8');
+  const [sniperTime, setSniperTime] = useState('5');
+  const [sniperRunning, setSniperRunning] = useState(false);
+  const [sniperLogs, setSniperLogs] = useState([]);
+  const [sniperLoading, setSniperLoading] = useState(false);
+  const [diagData, setDiagData] = useState(null);
+  const [diagLoading, setDiagLoading] = useState(false);
 
   // Load saved URL on mount
   useEffect(() => {
@@ -189,6 +196,93 @@ export default function App() {
       fetchAll();
     }
   }, [ngrokUrl]);
+
+  const fetchSniperStatus = useCallback(async () => {
+    if (!ngrokUrl) return;
+    try {
+      const res = await fetch(`${ngrokUrl}/snipe`, { headers: NGROK_HEADERS });
+      if (res.ok) {
+        const json = await res.json();
+        setSniperRunning(json.running);
+        setSniperLogs(json.logs || []);
+      }
+    } catch (e) {
+      console.log('Error fetching sniper status:', e);
+    }
+  }, [ngrokUrl]);
+
+  useEffect(() => {
+    let interval;
+    if (ngrokUrl && (activeTab === 'sniper' || sniperRunning)) {
+      fetchSniperStatus();
+      interval = setInterval(fetchSniperStatus, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [ngrokUrl, activeTab, sniperRunning, fetchSniperStatus]);
+
+  const handleStartSniper = async () => {
+    if (!ngrokUrl) { setSaveMsg('error:Set your API URL first.'); return; }
+    setSniperLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${ngrokUrl}/snipe`, {
+        method: 'POST',
+        headers: NGROK_HEADERS,
+        body: JSON.stringify({ day: parseInt(sniperDay), time: parseInt(sniperTime) }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to start sniper');
+      setSniperRunning(true);
+      setSniperLogs(['Starting sniper...']);
+    } catch (e) {
+      setError(`Sniper: ${e.message}`);
+    } finally {
+      setSniperLoading(false);
+    }
+  };
+
+  const handleStopSniper = async () => {
+    if (!ngrokUrl) return;
+    setSniperLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${ngrokUrl}/snipe/stop`, {
+        method: 'POST',
+        headers: NGROK_HEADERS,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to stop sniper');
+      setSniperRunning(false);
+    } catch (e) {
+      setError(`Sniper: ${e.message}`);
+    } finally {
+      setSniperLoading(false);
+    }
+  };
+
+  const fetchDiagnostics = useCallback(async () => {
+    if (!ngrokUrl) return;
+    setDiagLoading(true);
+    try {
+      const res = await fetch(`${ngrokUrl}/diagnose`, { headers: NGROK_HEADERS });
+      if (res.ok) {
+        const json = await res.json();
+        setDiagData(json);
+      } else {
+        throw new Error('Failed to fetch diagnostics');
+      }
+    } catch (e) {
+      console.log('Error fetching diagnostics:', e);
+    } finally {
+      setDiagLoading(false);
+    }
+  }, [ngrokUrl]);
+
+  useEffect(() => {
+    if (activeTab === 'diagnostics') {
+      fetchDiagnostics();
+    }
+  }, [activeTab, fetchDiagnostics]);
 
   const fetchAll = useCallback(async () => {
     if (!ngrokUrl) return;
@@ -285,14 +379,14 @@ export default function App() {
 
       {/* Tabs */}
       <View style={styles.tabs}>
-        {['schedule', 'status'].map(tab => (
+        {['schedule', 'status', 'sniper', 'diagnostics'].map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.tabActive]}
             onPress={() => setActiveTab(tab)}
           >
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-              {tab === 'schedule' ? 'Schedule' : 'History'}
+              {tab === 'schedule' ? 'Schedule' : tab === 'status' ? 'History' : tab === 'sniper' ? 'Sniper' : 'System'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -358,6 +452,130 @@ export default function App() {
               ? <ActivityIndicator color="#4CAF50" size="large" style={{ marginTop: 32 }} />
               : <StatusCard statusData={statusData} />
             }
+          </>
+        )}
+
+        {activeTab === 'sniper' && (
+          <>
+            <Text style={styles.sectionTitle}>Gym Sniper</Text>
+            <Text style={styles.sectionSub}>
+              Continuously fires requests to claim a booking on a specific day and time.
+            </Text>
+
+            <View style={styles.sniperForm}>
+              <View style={styles.formRow}>
+                <Text style={styles.formLabel}>Target Day (of month)</Text>
+                <TextInput
+                  style={styles.urlInput}
+                  value={sniperDay}
+                  onChangeText={setSniperDay}
+                  placeholder="e.g. 15"
+                  keyboardType="number-pad"
+                />
+              </View>
+
+              <View style={styles.formRow}>
+                <Text style={styles.formLabel}>Target Time Slot</Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={Number(sniperTime)}
+                    onValueChange={v => setSniperTime(String(v))}
+                    style={styles.picker}
+                    itemStyle={styles.pickerItem}
+                    dropdownIconColor="#4CAF50"
+                  >
+                    {[...WEEKDAY_OPTIONS, ...SATURDAY_OPTIONS].map(opt => (
+                      <Picker.Item key={opt.value} label={opt.label} value={opt.value} color="#fff" />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+
+              {sniperRunning ? (
+                <TouchableOpacity
+                  style={[styles.stopBtn, sniperLoading && styles.saveScheduleBtnDisabled]}
+                  onPress={handleStopSniper}
+                  disabled={sniperLoading}
+                >
+                  {sniperLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveScheduleBtnText}>Stop Sniper ⏹</Text>}
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.saveScheduleBtn, sniperLoading && styles.saveScheduleBtnDisabled]}
+                  onPress={handleStartSniper}
+                  disabled={sniperLoading}
+                >
+                  {sniperLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveScheduleBtnText}>Start Sniper 🎯</Text>}
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Sniper Live Logs</Text>
+            <View style={styles.consoleContainer}>
+              {sniperLogs.length > 0 ? (
+                sniperLogs.map((logLine, idx) => (
+                  <Text key={idx} style={styles.consoleText}>{logLine}</Text>
+                ))
+              ) : (
+                <Text style={styles.consolePlaceholder}>Logs will appear here once started.</Text>
+              )}
+            </View>
+          </>
+        )}
+
+        {activeTab === 'diagnostics' && (
+          <>
+            <Text style={styles.sectionTitle}>System Diagnostics</Text>
+            <Text style={styles.sectionSub}>Verify connection and server health metrics.</Text>
+
+            {diagLoading ? (
+              <ActivityIndicator color="#4CAF50" size="large" style={{ marginTop: 32 }} />
+            ) : diagData ? (
+              <View style={styles.diagCard}>
+                <View style={styles.diagRowItem}>
+                  <Text style={styles.diagLabelItem}>Flask API Status</Text>
+                  <View style={[styles.diagBadge, styles.badgeSuccess]}>
+                    <Text style={styles.diagBadgeText}>ONLINE</Text>
+                  </View>
+                </View>
+
+                <View style={styles.diagRowItem}>
+                  <Text style={styles.diagLabelItem}>Metro Bundler</Text>
+                  <View style={[styles.diagBadge, diagData.metro === 'OK' ? styles.badgeSuccess : styles.badgeFail]}>
+                    <Text style={styles.diagBadgeText}>{diagData.metro === 'OK' ? 'RUNNING' : 'OFFLINE'}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.diagRowItem}>
+                  <Text style={styles.diagLabelItem}>Chrome Profile</Text>
+                  <View style={[styles.diagBadge, diagData.chrome_profile === 'OK' ? styles.badgeSuccess : styles.badgeWarning]}>
+                    <Text style={styles.diagBadgeText}>{diagData.chrome_profile === 'OK' ? 'FOUND' : 'MISSING'}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.pathBox}>
+                  <Text style={styles.pathBoxLabel}>Chrome Profile Path</Text>
+                  <Text style={styles.pathBoxText} numberOfLines={3}>{diagData.chrome_path}</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.saveScheduleBtn}
+                  onPress={fetchDiagnostics}
+                >
+                  <Text style={styles.saveScheduleBtnText}>Run Diagnostics Again</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyStateText}>No diagnostic data. Make sure API is running.</Text>
+                <TouchableOpacity
+                  style={[styles.saveScheduleBtn, { marginTop: 12 }]}
+                  onPress={fetchDiagnostics}
+                >
+                  <Text style={styles.saveScheduleBtnText}>Run Diagnostics</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </>
         )}
       </ScrollView>
@@ -670,5 +888,109 @@ const styles = StyleSheet.create({
     color: C.textSecondary,
     fontSize: 14,
     textAlign: 'center',
+  },
+
+  // sniper styling
+  sniperForm: {
+    backgroundColor: C.surface,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  formRow: {
+    marginBottom: 16,
+  },
+  formLabel: {
+    color: C.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  stopBtn: {
+    backgroundColor: C.red,
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  consoleContainer: {
+    backgroundColor: '#000',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 12,
+    minHeight: 180,
+  },
+  consoleText: {
+    color: '#00FF00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  consolePlaceholder: {
+    color: C.textSecondary,
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 70,
+  },
+
+  // Diagnostics Styling
+  diagCard: {
+    backgroundColor: C.surface,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  diagRowItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: C.border,
+  },
+  diagLabelItem: {
+    color: C.textPrimary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  diagBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  diagBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: C.textPrimary,
+  },
+  badgeWarning: {
+    backgroundColor: 'rgba(255,152,0,0.2)',
+    borderWidth: 1,
+    borderColor: '#FF9800',
+  },
+  pathBox: {
+    backgroundColor: '#111',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 12,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  pathBoxLabel: {
+    color: C.textSecondary,
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  pathBoxText: {
+    color: C.textMuted,
+    fontSize: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
 });

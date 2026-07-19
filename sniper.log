@@ -1,0 +1,23 @@
+16:05:45  Tor browser executable not found. Falling back to local Chrome profile or Chromium...
+16:05:45  Using Chrome profile at: /Users/admin/Library/Application Support/Google/Chrome
+16:05:50  Failed to launch Chrome profile: BrowserType.launch_persistent_context: Timeout 5000ms exceeded.
+Call log:
+  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --profile-directory=Default --user-data-dir=/Users/admin/Library/Application Support/Google/Chrome --remote-debugging-pipe about:blank
+  - <launched> pid=32712
+  - [pid=32712][err]
+  - [pid=32712][err] DevTools remote debugging requires a non-default data directory. Specify this using --user-data-dir.
+  - [pid=32712][err] [32725:2086123:0719/160546.127418:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086186:0719/160546.127858:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086123:0719/160546.128297:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086186:0719/160546.128361:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086123:0719/160546.128668:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086186:0719/160546.128742:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086123:0719/160546.262054:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] [32725:2086186:0719/160546.262129:ERROR:ui/display/mac/cv_display_link_mac.mm:194] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+  - [pid=32712][err] Trying to load the allocator multiple times. This is *not* supported.
+  - [pid=32712][err] [32712:2086108:0719/160548.581901:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: QUOTA_EXCEEDED
+. Launching clean Chromium...
+16:05:50  =======================================================
+16:05:50    🎯  GYM SNIPER  |  Day 20  |  Time 11:15
+16:05:50    Max attempts : 500  |  Retry delay : 5s
+16:05:50  =======================================================

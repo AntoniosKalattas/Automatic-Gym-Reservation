@@ -6,3 +6,5 @@ python-dotenv>=0.19.2
 requests>=2.26.0
 flask>=3.0.0
 flask-cors>=4.0.0
+playwright>=1.40.0
+

@@ -38,27 +38,64 @@ class GymSniper:
         "online_reservations_pck2.insert_reservation?p_lang="
     )
 
-    def __init__(self):
+    def __init__(self, headless=HEADLESS):
         self.playwright = sync_playwright().start()
+        self.headless = headless
         self._init_browser()
         self.page.set_default_timeout(10000)  # Global 10-second timeout for element operations
+
     def _init_browser(self):
         # Pointing to the actual firefox binary inside the Tor Browser folder
         TOR_EXE_PATH = r"/home/antoniosk/Downloads/tor-browser-linux-x86_64-15.0.15/tor-browser/Browser/firefox" 
 
-        # Launching the Tor Browser (using the Firefox engine)
-        self.browser = self.playwright.firefox.launch(
-            headless=HEADLESS, 
-            executable_path=TOR_EXE_PATH,
-            args=["--disable-dev-shm-usage"]
-        )
-        self.context = self.browser.new_context()
-        self.page = self.context.new_page()
+        if os.path.exists(TOR_EXE_PATH):
+            log.info("Launching Tor Browser...")
+            # Launching the Tor Browser (using the Firefox engine)
+            self.browser = self.playwright.firefox.launch(
+                headless=self.headless, 
+                executable_path=TOR_EXE_PATH,
+                args=["--disable-dev-shm-usage"]
+            )
+            self.context = self.browser.new_context()
+            self.page = self.context.new_page()
+        else:
+            log.info("Tor browser executable not found. Falling back to local Chrome profile or Chromium...")
+            profile_path = os.getenv("CHROME_PROFILE_PATH")
+            profile_dir = os.getenv("CHROME_PROFILE_FOLDER", "Default")
+            
+            if profile_path and os.path.exists(profile_path):
+                log.info(f"Using Chrome profile at: {profile_path}")
+                try:
+                    self.context = self.playwright.chromium.launch_persistent_context(
+                        user_data_dir=profile_path,
+                        channel="chrome",
+                        headless=self.headless,
+                        args=[f"--profile-directory={profile_dir}"],
+                        timeout=5000
+                    )
+                    self.page = self.context.pages[0] if self.context.pages else self.context.new_page()
+                    self.browser = None
+                except Exception as e:
+                    log.warning(f"Failed to launch Chrome profile: {e}. Launching clean Chromium...")
+                    self.browser = self.playwright.chromium.launch(headless=self.headless)
+                    self.context = self.browser.new_context()
+                    self.page = self.context.new_page()
+            else:
+                log.info("Launching clean Chromium...")
+                self.browser = self.playwright.chromium.launch(headless=self.headless)
+                self.context = self.browser.new_context()
+                self.page = self.context.new_page()
         
     def close(self):
-        self.context.close()
-        if hasattr(self, 'browser'):
-            self.browser.close()
+        try:
+            self.context.close()
+        except Exception:
+            pass
+        if getattr(self, 'browser', None):
+            try:
+                self.browser.close()
+            except Exception:
+                pass
         self.playwright.stop()
 
     def _click(self, selector: str, timeout: int = 10000):
@@ -72,8 +109,9 @@ class GymSniper:
     # ── One-time setup: navigate to the time-selection page ──
     def _load_page(self):
         self.page.goto(self.BASE_URL)
-        if "login" in self.page.url:
-            raise RuntimeError("Login session expired — please log in manually first.")
+        url_lower = self.page.url.lower()
+        if "login" in url_lower or "iam.ucy.ac.cy" in url_lower or "idp/" in url_lower:
+            raise RuntimeError("Login session expired or Chrome is open. Please close Chrome on your Mac, make sure you are logged in, and try again.")
 
     def _select_gym(self):
         if not self._click("select option:nth-child(4)"):
@@ -226,5 +264,19 @@ class GymSniper:
 
 
 if __name__ == "__main__":
-    sniper = GymSniper()
-    sniper.snipe(TARGET_DAY, TARGET_TIME)
+    import sys
+    
+    day = TARGET_DAY
+    time_opt = TARGET_TIME
+    headless_mode = HEADLESS
+    
+    if len(sys.argv) > 2:
+        try:
+            day = int(sys.argv[1])
+            time_opt = int(sys.argv[2])
+            headless_mode = True  # Always run headless when spawned by API
+        except ValueError:
+            log.warning("Invalid command line arguments. Using default config.")
+            
+    sniper = GymSniper(headless=headless_mode)
+    sniper.snipe(day, time_opt)

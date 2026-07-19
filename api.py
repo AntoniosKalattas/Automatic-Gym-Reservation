@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import subprocess
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -114,6 +115,113 @@ def get_status():
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"ok": True})
+
+
+@app.route("/diagnose", methods=["GET"])
+def run_diagnostics():
+    chrome_path = os.getenv("CHROME_PROFILE_PATH")
+    chrome_exists = os.path.exists(chrome_path) if chrome_path else False
+    
+    import socket
+    metro_running = False
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(0.5)
+        metro_running = (s.connect_ex(('127.0.0.1', 8081)) == 0)
+        
+    return jsonify({
+        "api": "OK",
+        "metro": "OK" if metro_running else "OFFLINE",
+        "chrome_profile": "OK" if chrome_exists else "MISSING",
+        "chrome_path": chrome_path or "Not Configured"
+    })
+
+
+import sys
+
+# Global sniper process reference
+sniper_process = None
+
+
+@app.route("/snipe", methods=["POST"])
+def start_snipe():
+    global sniper_process
+    
+    # Check if sniper is already running
+    if sniper_process and sniper_process.poll() is None:
+        return jsonify({"error": "Sniper is already running"}), 400
+        
+    data = request.get_json(silent=True)
+    if not data or "day" not in data or "time" not in data:
+        return jsonify({"error": "Missing 'day' or 'time' in request body"}), 400
+        
+    try:
+        day = int(data["day"])
+        time_opt = int(data["time"])
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid day or time parameters"}), 400
+        
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        sniper_script = os.path.join(script_dir, "sniper.py")
+        log_path = os.path.join(script_dir, "sniper.log")
+        
+        log_file = open(log_path, "w")
+        
+        sniper_process = subprocess.Popen(
+            [sys.executable, "-u", sniper_script, str(day), str(time_opt)],
+            stdout=log_file,
+            stderr=log_file,
+            cwd=script_dir
+        )
+        return jsonify({"success": True, "message": f"Sniper started for Day {day}, Time {time_opt}"})
+    except Exception as e:
+        return jsonify({"error": f"Failed to start sniper: {str(e)}"}), 500
+
+
+@app.route("/snipe", methods=["GET"])
+def get_snipe_status():
+    global sniper_process
+    
+    running = False
+    exit_code = None
+    if sniper_process:
+        exit_code = sniper_process.poll()
+        running = (exit_code is None)
+        
+    logs = []
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    log_path = os.path.join(script_dir, "sniper.log")
+    
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r") as f:
+                lines = f.readlines()
+                logs = [line.strip() for line in lines[-20:]]
+        except Exception as e:
+            logs = [f"Error reading logs: {str(e)}"]
+            
+    return jsonify({
+        "running": running,
+        "exit_code": exit_code,
+        "logs": logs
+    })
+
+
+@app.route("/snipe/stop", methods=["POST"])
+def stop_snipe():
+    global sniper_process
+    if not sniper_process or sniper_process.poll() is not None:
+        return jsonify({"error": "Sniper is not running"}), 400
+        
+    try:
+        sniper_process.terminate()
+        try:
+            sniper_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            sniper_process.kill()
+        return jsonify({"success": True, "message": "Sniper stopped successfully"})
+    except Exception as e:
+        return jsonify({"error": f"Failed to stop sniper: {str(e)}"}), 500
 
 
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
