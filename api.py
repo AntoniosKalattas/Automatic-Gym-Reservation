@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -113,6 +114,40 @@ def get_status():
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"ok": True})
+
+
+@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
+@app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'])
+def proxy_to_expo(path):
+    # Fallback route to proxy requests to Expo Metro on port 8081 (dev mode only)
+    metro_url = f"http://localhost:8081/{path}"
+    
+    # Forward headers but keep host details aligned
+    headers = {key: value for (key, value) in request.headers}
+    
+    try:
+        response = requests.request(
+            method=request.method,
+            url=metro_url,
+            headers=headers,
+            params=request.args,
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False
+        )
+        
+        # Exclude hop-by-hop headers
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        resp_headers = [(name, value) for (name, value) in response.raw.headers.items()
+                        if name.lower() not in excluded_headers]
+                        
+        return (response.content, response.status_code, resp_headers)
+    except Exception as e:
+        return jsonify({
+            "error": "Failed to connect to Expo Metro bundler",
+            "details": str(e),
+            "message": "Make sure Metro is running with 'npm start' in the mobile directory."
+        }), 502
 
 
 if __name__ == "__main__":
