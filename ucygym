@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Runs the UCY Gym bot, building it first if the jar is missing or older than the sources.
+# Usage: ./ucygym <command>   (./ucygym help for the list)
+set -euo pipefail
+cd "$(dirname "$0")"
+
+JAR=target/ucygym.jar
+if [[ ! -f $JAR ]] || [[ -n $(find pom.xml src -newer "$JAR" -print -quit) ]]; then
+  echo "🔨 Building the bot..." >&2
+  mvn -q package
+fi
+exec java -jar "$JAR" "$@"

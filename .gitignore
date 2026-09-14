@@ -1,6 +1,7 @@
 node_modules/
 .env
-__pycache__/
 .vscode/
-venv/
+.idea/
+target/
 reservation_state.json
+schedule.json
